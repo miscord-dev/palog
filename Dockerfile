@@ -1,4 +1,4 @@
-FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.16 as builder
+FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.21 as builder
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -7,10 +7,9 @@ ARG TARGETARCH
 
 WORKDIR /app/
 ADD . .
-RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags="-w -s" -o /palrcon main.go
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags="-w -s" -o /palog .
 
 FROM --platform=${TARGETPLATFORM:-linux/amd64} scratch
-WORKDIR /app/
-COPY --from=builder /palrcon /palrcon
+COPY --from=builder /palog /palog
 
-ENTRYPOINT ["/palrcon"]
+ENTRYPOINT ["/palog"]
