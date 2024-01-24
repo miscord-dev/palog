@@ -125,7 +125,7 @@ func main() {
 				goto NEXT
 			}
 
-			for _, player := range players {
+			for _, player := range playersMap {
 				if _, ok := prev[player.PlayerUID]; !ok {
 					err := retriedBoarcast(fmt.Sprintf("joined:%s", player.Name))
 					if err != nil {
