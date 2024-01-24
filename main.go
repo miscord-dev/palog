@@ -50,6 +50,8 @@ func init() {
 }
 
 func escapeString(s string) string {
+	s = strings.ReplaceAll(s, " ", "_")
+
 	if !uconvLatin {
 		return s
 	}
