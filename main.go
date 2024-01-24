@@ -49,13 +49,7 @@ func init() {
 	}
 }
 
-func escapeString(s string) string {
-	s = strings.ReplaceAll(s, " ", "_")
-
-	if !uconvLatin {
-		return s
-	}
-
+func runUconvLatin(s string) string {
 	var out strings.Builder
 	cmd := exec.Command("uconv", "-x", "latin")
 	cmd.Stdin = strings.NewReader(s)
@@ -68,7 +62,26 @@ func escapeString(s string) string {
 		return s
 	}
 
-	return strings.TrimSpace(out.String())
+	return out.String()
+}
+
+func escapeString(s string) string {
+	if uconvLatin {
+		s = runUconvLatin(s)
+	}
+	s = strings.ReplaceAll(s, " ", "_")
+	s = strings.TrimSpace(s)
+
+	runes := []rune(s)
+	for i := range runes {
+		b := []byte(string(runes[i]))
+
+		if len(b) != 1 {
+			runes[i] = '*'
+		}
+	}
+
+	return string(runes)
 }
 
 func main() {
