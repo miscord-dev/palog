@@ -9,7 +9,8 @@ WORKDIR /app/
 ADD . .
 RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags="-w -s" -o /palog .
 
-FROM --platform=${TARGETPLATFORM:-linux/amd64} scratch
+FROM --platform=${TARGETPLATFORM:-linux/amd64} alpine:3.19
 COPY --from=builder /palog /palog
+RUN apk add --no-cache icu
 
 ENTRYPOINT ["/palog"]

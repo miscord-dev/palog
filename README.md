@@ -12,3 +12,5 @@ Broadcast messages that someone joined/left the game.
 
 ## Known issues
 * If the message is split via whitespaces, `Broadcast` sends only the first segment
+* CKJ characters are corrupted
+    * https://github.com/miscord-dev/palog/issues/6
