@@ -55,10 +55,28 @@ func main() {
 		m := make(map[string]palrcon.Player)
 
 		for _, player := range players {
-			m[player.SteamID] = player
+			if player.PlayerUID == "00000000" {
+				continue
+			}
+
+			m[player.PlayerUID] = player
 		}
 
 		return m
+	}
+
+	retriedBoarcast := func(message string) error {
+		var err error
+		for i := 0; i < 10; i++ {
+			err = palRCON.Broadcast(message)
+			if err != nil {
+				slog.Error("failed to broadcast", "error", err)
+				continue
+			}
+			return nil
+		}
+
+		return fmt.Errorf("failed to broadcast: %w", err)
 	}
 
 	for {
@@ -80,23 +98,24 @@ func main() {
 			}
 
 			for _, player := range players {
-				if _, ok := prev[player.SteamID]; !ok {
-					err := palRCON.Broadcast(fmt.Sprintf("joined:%s", player.Name))
+				if _, ok := prev[player.PlayerUID]; !ok {
+					err := retriedBoarcast(fmt.Sprintf("joined:%s", player.Name))
 					if err != nil {
 						slog.Error("failed to broadcast", "error", err)
+						continue
 					}
 
 					slog.Info("Player joined", "player", player)
 				}
 			}
 			for _, player := range prev {
-				if _, ok := playersMap[player.SteamID]; !ok {
-					err := palRCON.Broadcast(fmt.Sprintf("left:%s", player.Name))
+				if _, ok := playersMap[player.PlayerUID]; !ok {
+					slog.Info("Player left", "player", player)
+
+					err := retriedBoarcast(fmt.Sprintf("left:%s", player.Name))
 					if err != nil {
 						slog.Error("failed to broadcast", "error", err)
 					}
-
-					slog.Info("Player left", "player", player)
 				}
 			}
 

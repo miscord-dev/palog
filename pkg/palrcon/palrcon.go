@@ -55,7 +55,19 @@ func (p *palRCON) execute(command string) (string, error) {
 		return result, fmt.Errorf("failed to execute the command: %w", err)
 	}
 
-	return result, nil
+	if len(result) == 0 {
+		return result, nil
+	}
+
+	raw := []byte(result)
+	i := len(raw)
+	for ; i > 0; i-- {
+		if raw[i-1] != 0 {
+			break
+		}
+	}
+
+	return string(raw[:i]), nil
 }
 
 func (p *palRCON) GetPlayers() ([]Player, error) {
