@@ -52,7 +52,7 @@ func (p *palRCON) execute(command string) (string, error) {
 	result, err := rconn.Execute(command)
 
 	if err != nil {
-		return "", fmt.Errorf("failed to execute ShowPlayers: %w", err)
+		return result, fmt.Errorf("failed to execute the command: %w", err)
 	}
 
 	return result, nil
