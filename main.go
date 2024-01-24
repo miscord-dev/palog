@@ -66,7 +66,7 @@ func escapeString(s string) string {
 		return s
 	}
 
-	return out.String()
+	return strings.TrimSpace(out.String())
 }
 
 func main() {
