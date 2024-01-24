@@ -11,6 +11,8 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -ldflags="-w -s
 
 FROM --platform=${TARGETPLATFORM:-linux/amd64} debian:bookworm-slim
 COPY --from=builder /palog /palog
-RUN apk add --no-cache icu
+RUN apt-get update && \
+    apt-get install -y icu-devtools && \
+    rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["/palog"]
