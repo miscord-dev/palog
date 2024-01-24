@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/miscord-dev/palog/pkg/palrcon"
@@ -18,6 +20,8 @@ var (
 
 	timeoutRaw = os.Getenv("TIMEOUT")
 	timeout    time.Duration
+
+	uconvLatin = os.Getenv("UCONV_LATIN") != "false"
 )
 
 func init() {
@@ -45,6 +49,28 @@ func init() {
 	}
 }
 
+func escapeString(s string) string {
+	s = strings.ReplaceAll(s, " ", "_")
+
+	if !uconvLatin {
+		return s
+	}
+
+	var out strings.Builder
+	cmd := exec.Command("uconv", "-x", "latin")
+	cmd.Stdin = strings.NewReader(s)
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = &out
+
+	err := cmd.Run()
+	if err != nil {
+		slog.Error("failed to run uconv", "error", err)
+		return s
+	}
+
+	return strings.TrimSpace(out.String())
+}
+
 func main() {
 	palRCON := palrcon.NewPalRCON(rconEndpoint, rconPassword)
 	palRCON.SetTimeout(timeout)
@@ -66,6 +92,8 @@ func main() {
 	}
 
 	retriedBoarcast := func(message string) error {
+		message = escapeString(message)
+
 		var err error
 		for i := 0; i < 10; i++ {
 			err = palRCON.Broadcast(message)
