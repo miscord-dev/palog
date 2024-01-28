@@ -20,7 +20,7 @@ docker run --name palog -e RCON_ENDPOINT={PalWorldServerIP}:25575 -e RCON_PASSWO
 
 ### Binary installation
 #### Install palog
-* Use the following guide of installation
+* Install binary from [releases](https://github.com/miscord-dev/palog/releases/latest)
 * (optional) Install `uconv`
     * Non-ascii characters are converted via `uconv -x latin`
     * On Debian/Ubuntu; `apt-get install -y icu-devtools`
