@@ -2,6 +2,7 @@ package palrcon
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -88,6 +89,11 @@ func (p *palRCON) GetPlayers() ([]Player, error) {
 		}
 
 		fields := strings.Split(line, ",")
+
+		if len(fields) < 3 {
+			log.Printf("Corrupted player info: %s", line)
+			continue
+		}
 
 		players = append(players, Player{
 			Name:      strings.Join(fields[:len(fields)-2], ","),
